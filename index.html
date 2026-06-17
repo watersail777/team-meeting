@@ -196,10 +196,6 @@
     position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
     font-size: 0.8rem; color: var(--text-light); z-index: 100;
   }
-  .nav-hint {
-    position: fixed; bottom: 50px; right: 30px;
-    font-size: 0.75rem; color: #BDBDBD; z-index: 100;
-  }
   /* nav buttons */
   .nav-btns {
     position: fixed; bottom: 28px; right: 24px; z-index: 150;
@@ -265,7 +261,7 @@
   <div class="progress-bar-fill" id="progressBarFill"></div>
 </div>
 <div class="page-indicator" id="pageIndicator">1 / 63</div>
-<div class="nav-hint">← → 翻页</div>
+
 
 <script>
 // ============ SLIDE DATA ============
@@ -297,15 +293,16 @@ S(`<div class="section-icon">🔥</div><h2>数字炸弹</h2><p class="subtitle">
 // 4: Number bomb rules
 S(`<h2>🔥 游戏规则</h2>
 <div class="card"><ul class="rules-text">
-  <li>主持人在心里想一个 <b>1-100</b> 之间的数字</li>
-  <li>大家轮流猜数字，每猜一次<b>缩小范围</b></li>
-  <li>猜到炸弹数字的人接受<b>惩罚</b></li>
-  <li>惩罚二选一：制作自己的表情包 / 讲一个冷笑话</li>
-</ul></div>`);
+  <li>在 <b>1~100</b> 之间，藏着一个数字炸弹</li>
+  <li>大家轮流猜测这个数字，每猜一次范围缩小</li>
+  <li>猜到炸弹的人将受到<b>神秘惩罚</b>！</li>
+</ul></div>
+<p style="margin-top:14px;font-size:0.95rem;color:var(--text-light);">猜测顺序：芒果 → 希猫 → 临月 → 67 → 若壹 → 晚星 → 栗子 → 树洞 → 熙梦</p>`);
 
 // 5: Number bomb interactive
 S(`<h2>🔥 数字炸弹</h2>
 <p class="subtitle">输入你的猜测（1-100）</p>
+<p style="font-size:0.85rem;color:var(--text-light);margin-bottom:8px;">猜测顺序：芒果 → 希猫 → 临月 → 67 → 若壹 → 晚星 → 栗子 → 树洞 → 熙梦</p>
 <input type="number" class="bomb-input" id="bombInput" min="1" max="100" placeholder="?" autocomplete="off">
 <button class="btn" style="margin-top:12px;" onclick="checkBomb()">确认猜测</button>
 <p class="hint-text" id="bombHint"></p>
@@ -452,13 +449,7 @@ S(`<div class="section-icon">🍜</div><h2>这是谐音梗（美食篇）</h2><p
 
 // 60: 谐音梗 rules
 S(`<h2>🍜 游戏规则</h2>
-<div class="card"><ul class="rules-text">
-  <li>上下两张图为一组</li>
-  <li>上图给出<b>基础物品</b>及文字提示</li>
-  <li>下图在该物品基础上<b>增加新元素</b></li>
-  <li>将上下两张图的读音<b>拼接</b>，通过<b>谐音转换</b>得到一道菜名</li>
-  <li>核心靠中文同音/近音谐音，解题关键是抓每个元素的读音进行拼接转换</li>
-</ul></div>
+<div class="card"><p style="font-size:1.2rem;text-align:center;">快来根据图片猜猜是什么美食吧！</p></div>
 <p style="margin-top:16px;font-size:0.9rem;color:var(--text-light);">具体题目见另一份PPT</p>`);
 
 // 61: Memory challenge title
@@ -467,10 +458,10 @@ S(`<div class="section-icon">🖼️</div><h2>记忆力大挑战</h2><p class="s
 // 62: Memory challenge rules
 S(`<h2>🖼️ 游戏规则</h2>
 <div class="card"><ul class="rules-text">
-  <li>PPT上展示一张截图（动漫、电视剧、影视剧、综艺均可）</li>
-  <li>大家看<b>6秒钟</b>，随后图片消失</li>
-  <li>PPT出现一个关于<b>画面细节</b>的问题</li>
-  <li>大家<b>抢答</b>，答对得分，答错或超时进入下一题</li>
+  <li>待会会出现一张图片</li>
+  <li><b>6秒钟</b>后图片消失</li>
+  <li>之后会出现一个关于<b>画面细节</b>的问题</li>
+  <li>请大家<b>抢答</b>，答对积 <b>1 分</b>，答错的话其他人继续抢答</li>
 </ul></div>
 <p style="margin-top:16px;font-size:0.9rem;color:var(--text-light);">具体题目见另一份PPT</p>`);
 
@@ -702,15 +693,6 @@ function resetTimer() {
 // ============ INIT ============
 renderAll();
 updateProgress();
-
-// Keyboard hint: hide after first use
-let hintHidden = false;
-document.addEventListener('keydown', () => {
-  if (!hintHidden) {
-    hintHidden = true;
-    document.querySelector('.nav-hint').style.display = 'none';
-  }
-}, { once: false });
 
 // Enter key for bomb input
 document.addEventListener('keydown', e => {
