@@ -278,7 +278,7 @@ S(`<h1>第二次线上团建会议</h1>
 S(`<h2>今晚流程</h2>
 <div class="timeline">
   <div class="timeline-item"><div class="timeline-icon ti-red">🔥</div><div class="timeline-body"><div class="tl-title">数字炸弹</div><div class="tl-desc">开场热场 · 10分钟</div></div></div>
-  <div class="timeline-item"><div class="timeline-icon ti-orange">🍔</div><div class="timeline-body"><div class="tl-title">Emoji 猜美食</div><div class="tl-desc">谐音猜菜名 · 15分钟</div></div></div>
+  <div class="timeline-item"><div class="timeline-icon ti-orange">🍔</div><div class="timeline-body"><div class="tl-title">Emoji 猜猜猜</div><div class="tl-desc">美食·电影·成语 · 15分钟</div></div></div>
   <div class="timeline-item"><div class="timeline-icon ti-blue">📢</div><div class="timeline-body"><div class="tl-title">各板块汇报</div><div class="tl-desc">学工 → 教研 → 传播 → 后勤 · 20分钟</div></div></div>
   <div class="timeline-item"><div class="timeline-icon ti-blue">🤝</div><div class="timeline-body"><div class="tl-title">协作讨论 + 问题预想</div><div class="tl-desc">跨板块协作 · 30分钟</div></div></div>
   <div class="timeline-item"><div class="timeline-icon ti-green">🎭</div><div class="timeline-body"><div class="tl-title">两真一假</div><div class="tl-desc">互相了解 · 15分钟</div></div></div>
@@ -297,14 +297,15 @@ S(`<h2>🔥 游戏规则</h2>
   <li>大家轮流猜测这个数字，每猜一次范围缩小</li>
   <li>猜到炸弹的人将受到<b>神秘惩罚</b>！</li>
 </ul></div>
-<p style="margin-top:14px;font-size:0.95rem;color:var(--text-light);">猜测顺序：芒果 → 希猫 → 临月 → 67 → 若壹 → 晚星 → 栗子 → 树洞 → 熙梦</p>`);
+<p style="margin-top:14px;font-size:0.95rem;color:var(--text-light);">猜测顺序：三三 → 芒果 → 希猫 → 临月 → 67 → 若壹 → 晚星 → 栗子 → 树洞 → 熙梦</p>`);
 
 // 5: Number bomb interactive
-S(`<h2>🔥 数字炸弹</h2>
+S(`<h2>🔥 数字炸弹 <span style="font-size:1rem;color:var(--accent);" id="roundLabel">第1轮</span></h2>
 <p class="subtitle">输入你的猜测（1-100）</p>
-<p style="font-size:0.85rem;color:var(--text-light);margin-bottom:8px;">猜测顺序：芒果 → 希猫 → 临月 → 67 → 若壹 → 晚星 → 栗子 → 树洞 → 熙梦</p>
+<p style="font-size:0.85rem;color:var(--text-light);margin-bottom:8px;">猜测顺序：三三 → 芒果 → 希猫 → 临月 → 67 → 若壹 → 晚星 → 栗子 → 树洞 → 熙梦</p>
 <input type="number" class="bomb-input" id="bombInput" min="1" max="100" placeholder="?" autocomplete="off">
 <button class="btn" style="margin-top:12px;" onclick="checkBomb()">确认猜测</button>
+<button class="btn btn-sm" style="margin-left:8px;" onclick="nextRound()" id="nextRoundBtn">下一轮 ▶</button>
 <p class="hint-text" id="bombHint"></p>
 <p class="range-text" id="bombRange">范围：1 — 100</p>
 <div class="history-box" id="bombHistory"></div>
@@ -312,9 +313,9 @@ S(`<h2>🔥 数字炸弹</h2>
 
 // 6: Number bomb reveal (bomb = 11)
 S(`<h2>🔥 炸弹揭晓</h2>
-<p class="subtitle">预设的炸弹数字是……</p>
-<div style="font-size:6rem;font-weight:900;color:#EF5350;margin:20px 0;" id="bombRevealNum">11</div>
-<p class="subtitle" style="margin-top:8px;">代表我们洞天府邸的<b>十一个人</b></p>`);
+<p class="subtitle">第<span id="bombRevealRound">1</span>轮的炸弹数字是……</p>
+<div style="font-size:6rem;font-weight:900;color:#EF5350;margin:20px 0;" id="bombRevealNum">17</div>
+<p class="subtitle" style="margin-top:8px;" id="bombRevealMsg">你猜对了吗？</p>`);
 
 // 7: Number bomb punishment
 S(`<h2>😈 惩罚二选一</h2>
@@ -324,36 +325,42 @@ S(`<h2>😈 惩罚二选一</h2>
 </div>`);
 
 // 8: Emoji food title
-S(`<div class="section-icon">🍔</div><h2>Emoji 猜美食</h2><p class="subtitle">谐音猜菜名 · 15道题</p>`);
+S(`<div class="section-icon">🍔</div><h2>Emoji 猜猜猜</h2><p class="subtitle">美食 · 电影 · 成语</p>`);
 
-// 9-38: 15 emoji questions (Q+A pairs)
-const emojiQs = [
-  { emoji: "🐟 🍌 🥩 🎀", answer: "鱼香肉丝", hint: "鱼 + 香(蕉) + 肉 + 丝(带)" },
-  { emoji: "🏹 💥 🐔 🔩", answer: "宫保鸡丁", hint: "弓(宫) + 爆(保) + 鸡 + 钉(丁)" },
-  { emoji: "👫 ✈️ 🎬", answer: "夫妻肺片", hint: "夫妻 + 飞(肺) + 片" },
-  { emoji: "🐴 👵 🫘 🪓", answer: "麻婆豆腐", hint: "马(麻) + 婆 + 豆 + 斧(腐)" },
-  { emoji: "🐟 🚬 🍆", answer: "鱼香茄子", hint: "鱼 + 香烟(香) + 茄子" },
-  { emoji: "🔪 🌶️ 🐟 🎲", answer: "剁椒鱼头", hint: "剁 + 椒 + 鱼 + 骰(头)" },
-  { emoji: "4️⃣ 😄 🍢 👶", answer: "四喜丸子", hint: "四 + 喜 + 丸(串) + 子" },
-  { emoji: "👌 😄 🐔 📏", answer: "可乐鸡翅", hint: "OK(可) + 乐 + 鸡 + 尺(翅)" },
-  { emoji: "🔴 🔥 🏐 🦴", answer: "红烧排骨", hint: "红 + 烧(火) + 排(球) + 骨" },
-  { emoji: "🛢️ 🚪 👊 🦐", answer: "油焖大虾", hint: "油 + 门(焖) + 大(拳头) + 虾" },
-  { emoji: "🌲 🐭 🐢 🐟", answer: "松鼠桂鱼", hint: "松(树) + 鼠 + 龟(桂) + 鱼" },
-  { emoji: "🐑 🥩 🏃 💆", answer: "羊肉泡馍", hint: "羊 + 肉 + 跑(泡) + 摩(馍)" },
-  { emoji: "🐴 👔 ⬆️ 🌳", answer: "蚂蚁上树", hint: "蚂(马) + 蚁(衣) + 上 + 树" },
-  { emoji: "🥶 👵 🚶 👶", answer: "东坡肘子", hint: "冻(东) + 婆(坡) + 走(肘) + 子" },
-  { emoji: "🦷 ✍️ 🎀 🕸️", answer: "鸭血粉丝", hint: "牙(鸭) + 写(血) + 粉 + 丝(网)" },
-];
-emojiQs.forEach((q, i) => {
-  S(`<h2>🍔 第 ${i+1} 题</h2>
-<div class="emoji-row">${q.emoji}</div>
-<p class="subtitle">猜一道经典中餐菜名</p>`);
-  S(`<h2>🍔 第 ${i+1} 题 · 答案</h2>
-<div class="emoji-row">${q.emoji}</div>
-<div class="answer-hidden" onclick="revealAnswer(this, '${q.answer}')" id="ans${i}">👆 点击揭晓答案</div>
-<p style="margin-top:10px;font-size:0.9rem;color:var(--text-light);display:none;" class="hint-detail" id="hint${i}">🔍 ${q.hint}</p>`);
-});
-
+// 9-41: Emoji 猜猜猜 — 三个专题各5道
+	const categories = [
+	  { title: "🍔 美食篇", subtitle: "猜猜是什么菜？" },
+	  { title: "🎬 电影篇", subtitle: "猜猜是哪部电影？" },
+	  { title: "📖 成语篇", subtitle: "猜猜是什么成语？" },
+	];
+	const emojiQs = [
+	  { emoji: "🪡 🐷 🧋", answer: "珍珠奶茶", hint: "针(珍) + 猪(珠) + 奶 + 茶", cat: 0 },
+	  { emoji: "💧 🐷 🥩 🎬", answer: "水煮肉片", hint: "水 + 猪(煮) + 肉 + 片", cat: 0 },
+	  { emoji: "8️⃣ 🎀 🔴 🍟", answer: "拔丝红薯", hint: "八(拔) + 丝 + 红 + 薯", cat: 0 },
+	  { emoji: "🌶️ 🐔 🔩", answer: "辣子鸡丁", hint: "辣 + 鸡 + 钉(丁)", cat: 0 },
+	  { emoji: "🐑 🥣 🍃 🍚", answer: "扬州炒饭", hint: "羊(扬) + 粥(州) + 草(炒) + 饭", cat: 0 },
+	  { emoji: "🦁 👑", answer: "狮子王", hint: "狮子 + 王", cat: 1 },
+	  { emoji: "🧙‍♂️ ⚡ 👓", answer: "哈利·波特", hint: "巫师 + 闪电(疤痕) + 眼镜", cat: 1 },
+	  { emoji: "🐕 8️⃣", answer: "忠犬八公的故事", hint: "狗(忠犬) + 八(八公)", cat: 1 },
+	  { emoji: "✂️ 👤 ✂️", answer: "剪刀手爱德华", hint: "剪刀 + 手 + 剪刀", cat: 1 },
+	  { emoji: "🍫 🏓 🏃", answer: "阿甘正传", hint: "巧克力 + 乒乓球 + 跑步", cat: 1 },
+	  { emoji: "🐔 ✈️ 🐶 ⛵", answer: "鸡飞狗跳", hint: "鸡 + 飞 + 狗 + 跳", cat: 2 },
+	  { emoji: "🎨 🐍 🦶", answer: "画蛇添足", hint: "画 + 蛇 + 脚(足)", cat: 2 },
+	  { emoji: "🐺 💨 4️⃣ 🔥", answer: "狼烟四起", hint: "狼 + 烟 + 四 + 起(火)", cat: 2 },
+	  { emoji: "🐔 ✈️ 🥚 👊", answer: "鸡飞蛋打", hint: "鸡 + 飞 + 蛋 + 打(拳)", cat: 2 },
+	  { emoji: "🌸 🌕 ⭕", answer: "花好月圆", hint: "花 + 好 + 月 + 圆(圈)", cat: 2 },
+	];
+	let globalQi = 0;
+	for (let c = 0; c < 3; c++) {
+	  S('<h2>' + categories[c].title + '</h2><p class="subtitle">' + categories[c].subtitle + '</p>');
+	  for (let j = 0; j < 5; j++) {
+	    const q = emojiQs[globalQi];
+	    const icon = categories[c].title.split(' ')[0];
+	    S('<h2>' + icon + ' 第 ' + (j+1) + ' 题</h2><div class="emoji-row">' + q.emoji + '</div><p class="subtitle">' + categories[c].subtitle + '</p>');
+	    S('<h2>' + icon + ' 第 ' + (j+1) + ' 题 · 答案</h2><div class="emoji-row">' + q.emoji + '</div><div class="answer-hidden" onclick="revealAnswer(this, '' + q.answer + '')" id="ans' + globalQi + '">👆 点击揭晓答案</div><p style="margin-top:10px;font-size:0.9rem;color:var(--text-light);display:none;" class="hint-detail" id="hint' + globalQi + '">🔍 ' + q.hint + '</p>');
+	    globalQi++;
+	  }
+	}
 // 39: Work discussion transition
 S(`<div class="section-icon">📢</div><h2>工作讨论环节</h2><p class="subtitle">学工 → 教研 → 传播 → 后勤</p>`);
 
@@ -544,9 +551,11 @@ document.addEventListener('click', e => {
 
 // ============ INTERACTIVE FEATURES ============
 
-// Number bomb
+// Number bomb — two rounds
+const BOMBS = [17, 68];
+let bombRound = 0;
+let currentBomb = BOMBS[0];
 let bombMin = 1, bombMax = 100;
-const BOMB = 11;
 let guessHistory = [];
 
 function checkBomb() {
@@ -554,15 +563,20 @@ function checkBomb() {
   const guess = parseInt(input.value);
   if (isNaN(guess) || guess < bombMin || guess > bombMax) return;
   guessHistory.push(guess);
-  if (guess === BOMB) {
+  if (guess === currentBomb) {
     document.getElementById('bombHint').textContent = '';
     document.getElementById('bombRange').textContent = '';
     document.getElementById('bombBoom').innerHTML = '<div class="boom-text">💣 BOOM！你中弹了！</div>';
     document.getElementById('bombHistory').innerHTML = '';
     input.disabled = true;
+    // Update reveal page
+    const rv = document.getElementById('bombRevealNum');
+    if (rv) rv.textContent = currentBomb;
+    const rr = document.getElementById('bombRevealRound');
+    if (rr) rr.textContent = bombRound + 1;
     return;
   }
-  if (guess < BOMB) {
+  if (guess < currentBomb) {
     bombMin = Math.max(bombMin, guess + 1);
     document.getElementById('bombHint').innerHTML = '<span style="color:#1565C0;">📈 比 ' + guess + ' <b>大</b>！</span>';
   } else {
@@ -578,27 +592,52 @@ function checkBomb() {
 function renderHistory() {
   const box = document.getElementById('bombHistory');
   box.innerHTML = guessHistory.map(g => {
-    const cls = g < BOMB ? 'guess-low' : 'guess-high';
-    const arrow = g < BOMB ? '↑' : '↓';
+    const cls = g < currentBomb ? 'guess-low' : 'guess-high';
+    const arrow = g < currentBomb ? '↑' : '↓';
     return '<span class="history-tag ' + cls + '">' + g + ' ' + arrow + '</span>';
   }).join('');
 }
 
+function nextRound() {
+  if (bombRound >= 1) return;
+  bombRound = 1;
+  currentBomb = BOMBS[1];
+  bombMin = 1; bombMax = 100;
+  guessHistory = [];
+  const inp = document.getElementById('bombInput');
+  if (inp) { inp.value = ''; inp.disabled = false; inp.focus(); }
+  document.getElementById('bombHint').textContent = '';
+  document.getElementById('bombRange').textContent = '范围：1 — 100';
+  document.getElementById('bombHistory').innerHTML = '';
+  document.getElementById('bombBoom').innerHTML = '';
+  document.getElementById('roundLabel').textContent = '第2轮';
+  document.getElementById('nextRoundBtn').style.display = 'none';
+  const rv = document.getElementById('bombRevealNum');
+  if (rv) rv.textContent = '68';
+  const rr = document.getElementById('bombRevealRound');
+  if (rr) rr.textContent = '2';
+}
+
 // Reset bomb state when entering slide 5
 function resetBombIfNeeded() {
-  if (currentSlide === 4) { // slide index 4 = 5th slide (0-indexed)
+  if (currentSlide === 4) {
+    bombRound = 0; currentBomb = BOMBS[0];
     bombMin = 1; bombMax = 100;
     guessHistory = [];
     const inp = document.getElementById('bombInput');
     if (inp) { inp.value = ''; inp.disabled = false; inp.focus(); }
-    const hint = document.getElementById('bombHint');
-    if (hint) hint.textContent = '';
-    const range = document.getElementById('bombRange');
-    if (range) range.textContent = '范围：1 — 100';
-    const hist = document.getElementById('bombHistory');
-    if (hist) hist.innerHTML = '';
-    const boom = document.getElementById('bombBoom');
-    if (boom) boom.innerHTML = '';
+    document.getElementById('bombHint').textContent = '';
+    document.getElementById('bombRange').textContent = '范围：1 — 100';
+    document.getElementById('bombHistory').innerHTML = '';
+    document.getElementById('bombBoom').innerHTML = '';
+    const rl = document.getElementById('roundLabel');
+    if (rl) rl.textContent = '第1轮';
+    const nb = document.getElementById('nextRoundBtn');
+    if (nb) nb.style.display = 'inline-block';
+    const rv = document.getElementById('bombRevealNum');
+    if (rv) rv.textContent = '17';
+    const rr = document.getElementById('bombRevealRound');
+    if (rr) rr.textContent = '1';
   }
 }
 
